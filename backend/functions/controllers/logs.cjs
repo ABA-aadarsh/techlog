@@ -1,15 +1,15 @@
 const { request, response } = require("express")
 const Log = require("../../models/logs.cjs")
-const { isAdmin } = require("../libs.cjs")
+const { isAdmin, isObjectRequirementFullfilled } = require("../libs.cjs")
 const mongoose = require("mongoose")
 const getAllLogsTitles = async (req = request, res = response) => {
     try {
         const params = req.params
         let page = 1, limit = 10
-        if (params.hasOwnProperty("page")) {
+        if (params.hasOwn("page")) {
             page = Number(params.page)
         }
-        if (params.hasOwnProperty("limit")) {
+        if (params.hasOwn("limit")) {
             limit = Number(params.limit)
         }
         const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit)
@@ -28,7 +28,7 @@ const getAllLogsTitles = async (req = request, res = response) => {
 }
 const getLog = async (req = request, res = response) => {
     try {
-        if (!req.params.hasOwnProperty("slug")) {
+        if (!req.params.hasOwn("slug")) {
             return res.status(400).json({ message: "Slug Not Passed" })
         }
         const slug = req.params.slug
@@ -59,16 +59,8 @@ const getLog = async (req = request, res = response) => {
 }
 const addLog = async (req = request, res = response) => {
     try {
-        const adminVerfied = isAdmin(req)
-        if (!adminVerfied) {
-            return res.status(403).json(
-                {
-                    message: "Not authorised"
-                }
-            )
-        }
         const bodyObj = req.body
-        if (!bodyObj.hasOwnProperty("title") || !bodyObj.hasOwnProperty("content") || !bodyObj.hasOwnProperty("tags")) {
+        if (!isObjectRequirementFullfilled(bodyObj, ["title","content", "tags"])) {
             return res.status(401).json(
                 {
                     message: "Data not passed"
@@ -78,7 +70,8 @@ const addLog = async (req = request, res = response) => {
         const newLog = await Log(
             {
                 title: bodyObj.title,
-                content: bodyObj.content
+                content: bodyObj.content,
+                tags: bodyObj.tags
             }
         ) //default new logs are private
         const savedLog = await newLog.save()
@@ -99,8 +92,8 @@ const changePublicStatus = async (req=request, res=response) => {
         // required id and newStatus
         const params = req.params
         const body = req.body
-        if(!params.hasOwnProperty("id")) return res.status(400).json({message:"Log id must be passed"});
-        if(!body.hasOwnProperty("newPublicStatus")) return res.status(400).json({message: "Body object must have property: newPublicStatus"});
+        if(!params.hasOwn("id")) return res.status(400).json({message:"Log id must be passed"});
+        if(!body.hasOwn("newPublicStatus")) return res.status(400).json({message: "Body object must have property: newPublicStatus"});
 
         const updatedlog = await Log.findByIdAndUpdate(params.id, {public: body.newPublicStatus}, {runValidators:true, new:true}).select("_id")
         if(!updatedlog){
@@ -131,7 +124,7 @@ const changePublicStatus = async (req=request, res=response) => {
 const deleteLog = async (req, res) => {
     try {
         const params = req.params
-        if(!params.hasOwnProperty("id")) return res.status(400).json({message:"Log id must be passed"});
+        if(!params.hasOwn("id")) return res.status(400).json({message:"Log id must be passed"});
         const deletedLog = await Log.findByIdAndDelete(id)
         return res.status(206).json({message: "Log deleted"})
     } catch (error) {
@@ -146,8 +139,53 @@ const updateTitle = async (req, res) => {
 }
 const updateTitleAndContent = async (req, res) => {
     try {
-        
+        const params = req.params
+        const body = req.body
+        if(!params.hasOwn("id")){
+            return res.status(400).json(
+                {
+                    message: "Log id is required"
+                }
+            )   
+        }
+        if(!isObjectRequirementFullfilled(body, ["title", "content", "tags"])){
+            return res.status(400).json(
+                {
+                    message: "Body must have title and content properties"
+                }
+            )  
+        }
+        const updatedLog = await Log.findByIdAndUpdate(params.id, 
+            {
+                title: body.title,
+                content: body.content,
+                tags: body.tags
+            },
+            {
+                runValidators: true,
+                new: true
+            }
+        ).select("_id")
+        if(!updatedLog){
+            return res.status(404).json(
+                {
+                    message: "Doc does not exit"
+                }
+            )
+        }
+        return res.status(200).json(
+            {
+                id: updatedLog._id
+            }
+        )
     } catch (error) {
+        if(error instanceof mongoose.Error.ValidationError){
+            return res.status(406).json(
+                {
+                    message: "New update value fails schema validation"
+                }
+            )
+        }
         console.log(error)
         return res.status(500).json({
             message: "Internal Server Failure"
