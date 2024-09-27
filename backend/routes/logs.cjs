@@ -4,7 +4,7 @@ const LogsController = require("../functions/controllers/logs.cjs")
 const isAdminMiddleware = require("../functions/middlewares/isAdmin.cjs")
 router
 .get("/", LogsController.getAllLogsTitles)
-.get("/:id", LogsController.getLog)
+.get("/:slug", LogsController.getLog)
 .delete("/:id",isAdminMiddleware,LogsController.deleteLog)
 .patch("/:id/public-staus-change", isAdminMiddleware, LogsController.changePublicStatus)
 .patch("/:id", isAdminMiddleware, LogsController.updateTitleAndContent)

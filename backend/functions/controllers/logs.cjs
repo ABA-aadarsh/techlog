@@ -13,7 +13,7 @@ const getAllLogsTitles = async (req = request, res = response) => {
             limit = Number(params.limit)
         }
         const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit)
-            .select({ title: 1, updatedAt: 1 })
+            .select({ title: 1, updatedAt: 1 , slug: 1})
         return res.status(200).json(
             {
                 data: logsTitlesArray
