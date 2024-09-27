@@ -8,7 +8,7 @@ export async function middleware(req) {
     if (token && allowedEmails.includes(token.email)) {
         return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
 }
 
 export const config = {
