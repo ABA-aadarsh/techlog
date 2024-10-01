@@ -14,8 +14,8 @@ const Preview = ({title,content,tags}) => {
     .use(remarkParse)
     .use(remarkRehype)
     .use(rehypeStringify)
-    const md = await processor.process(content)
-    setPreviewhtml(md)
+    const htmlContent = await processor.process(content)
+    setPreviewhtml(htmlContent)
     setLoading(false)
   }
   useEffect(()=>{

@@ -13,10 +13,12 @@ const getAllLogsTitles = async (req = request, res = response) => {
             limit = Number(queries.limit)
         }
         const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 0}
+        const filterQuery = {public:true}
         if(queries.hasOwn("sid") && queries["sid"]=="1" && isAdmin(req)){
             selectionObject._id = 1;
+            filterQuery = {}
         }
-        const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
+        const logsTitlesArray = await Log.find(filterQuery).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
         return res.status(200).json(
             {
                 data: logsTitlesArray
@@ -38,8 +40,7 @@ const getLog = async (req = request, res = response) => {
         const log = await Log.findOne({ slug: slug })
         if (log) {
             const isPublic = log.public
-            if ((isPublic) || (isAdmin(req))) {
-                // either the post must be public or the person requesting must be admin
+            if (isPublic) {
                 return res.status(201).json(
                     {
                         data: log
@@ -53,6 +54,25 @@ const getLog = async (req = request, res = response) => {
             }
         )
 
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            message: "Internal Server Failure"
+        })
+    }
+}
+const getLogDataForAdmin = async (req = request, res = response) => {
+    try {
+        if (!req.params.hasOwn("id")) {
+            return res.status(400).json({ message: "Id Not Passed" })
+        }
+        const id = req.params.id
+        const log = await Log.findById(req.params.id)
+        return res.status(201).json(
+            {
+                data: log
+            }
+        )
     } catch (error) {
         console.log(error)
         return res.status(500).json({
@@ -196,4 +216,4 @@ const updateTitleAndContent = async (req, res) => {
         })
     }
 }
-module.exports = { getAllLogsTitles, getLog, addLog, changePublicStatus, deleteLog, updateTitle, updateTitleAndContent }
+module.exports = { getAllLogsTitles, getLog, addLog, changePublicStatus, deleteLog, updateTitle, updateTitleAndContent, getLogDataForAdmin }

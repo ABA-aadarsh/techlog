@@ -5,6 +5,7 @@ import { useData } from './_hooks/useData';
 import Editor from './_components/Editor';
 import Preview from './_components/Preview';
 import {  X } from 'lucide';
+import { backendRoute } from '@/app/util';
 
 const page = ({params}) => {
     const [loading,setLoading] = useState(true)
@@ -14,9 +15,9 @@ const page = ({params}) => {
         addTag, content, deleteTag, setValues, tags, title, updateContent, updateTitle
     }=useData()
     const [newTagValue,setNewTagValue]=useState("")
-    const fetchData = async (slug="")=>{
+    const fetchData = async (id="")=>{
         try {
-            const apiRoute = `http://localhost:8080/logs/${slug}`
+            const apiRoute = backendRoute+`/adminPrivate/logs/${id}`
             const res = await fetch(apiRoute,{
                 method: "GET"
             })
@@ -41,7 +42,7 @@ const page = ({params}) => {
     const saveLog = async (id)=>{
         // updation
         try {
-            const apiRoute =`http://localhost:8080/logs/${id}`
+            const apiRoute =backendRoute+`/adminPrivate/logs/${id}`
             const res = await fetch(apiRoute, {
                 method: "PATCH",
                 headers: {

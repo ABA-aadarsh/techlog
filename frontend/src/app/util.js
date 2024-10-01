@@ -1,0 +1,1 @@
+export const backendRoute = "http://localhost:8080"

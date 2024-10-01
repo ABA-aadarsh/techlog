@@ -3,7 +3,7 @@ const express = require("express")
 const cors = require("cors")
 const app = express()
 const port = process.env.MODE == "DEVELOPMENT" ? 8080: null
-const LogsRouter = require("./routes/logs.cjs")
+const LogsRouter = require("./routes/logs/index.cjs")
 app.use(express.json())
 
 const corsOptions = {

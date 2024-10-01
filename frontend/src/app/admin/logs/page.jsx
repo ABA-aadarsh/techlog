@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import AddNewForm from './_components/AddNewForm';
 import Link from 'next/link';
+import { backendRoute } from '@/app/util';
 
 const page = () => {
     const limit = 10; // no of titles per one request
@@ -12,7 +13,7 @@ const page = () => {
     const getLogsList = async (page=1)=>{
         // initial load and load more logs TODO: store these datas in local storage along with time expiration settings
         if(logsList.length==0) setListLoading(true)
-        const apiRoute = `http://localhost:8080/logs?page=${page}&limit=${limit}&sid=1`
+        const apiRoute = backendRoute+`/adminPrivate/logs?page=${page}&limit=${limit}&sid=1`
         const res = await fetch(apiRoute, {method: "GET"})
         const responseStatus = res.status
         if(responseStatus == 200) {
@@ -26,7 +27,7 @@ const page = () => {
         setListLoading(false)
     }
     const createNewLog = async (title, tags)=>{
-        const apiRoute = `http://localhost:8080`
+        const apiRoute = backendRoute+`/adminPrivate/logs`
         const res = await fetch (apiRoute, {
             method: "POST",
             headers: {

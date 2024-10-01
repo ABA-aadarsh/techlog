@@ -1,11 +1,37 @@
-import React from 'react'
+"use client";
+import React, { useState } from 'react'
 import BtnWithDialog from './BtnWithDialog'
+import { useRouter } from 'next/navigation';
+import { backendRoute } from '@/app/util';
 
 const SettingPanel = ({id,publicStatus=false}) => {
+    const router = useRouter()
+    const [isPublic, setIsPublic]=useState(publicStatus)
     const updatePublicStatus = async ()=>{
+        const apiRoute = backendRoute+`/adminPrivate/logs/${id}/public-staus-change`
+        const res = await fetch(apiRoute,{
+            method:"PATCH",
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({newPublicStatus: !isPublic})
+        })
+        if(res.status==200){
+            setIsPublic(!isPublic)
+        }else{
+            console.log("Failed to update public status")
+        }
     }
     const deleteLog = async ()=>{
-
+        const apiRoute = backendRoute+`/adminPrivate/logs/${id}`
+        const res = await fetch(apiRoute,{
+            method:"DELETE"
+        })
+        if(res.status==200){
+            console.log("Log deleted")
+            router.push("/admin/logs")
+            router.push()
+        }else{
+            console.log("Failed to delete log")
+        }
     }
   return (
     <div>
@@ -23,7 +49,7 @@ const SettingPanel = ({id,publicStatus=false}) => {
                     heading={"Change Public Status"}
                     message={"Changing the public status of log might cause the server to rebuild certain pages? Are you sure about it?"}
                     onConfirmFunction={updatePublicStatus}
-                    triggerText={publicStatus?"Make Private":"Make Public"}
+                    triggerText={isPublic?"Make Private":"Make Public"}
                 />
             </li>
         </ul>
