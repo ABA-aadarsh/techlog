@@ -39,6 +39,7 @@ const page = ({params}) => {
         setLoading(false)
     }
     const saveLog = async (id)=>{
+        // updation
         try {
             const apiRoute =`http://localhost:8080/logs/${id}`
             const res = await fetch(apiRoute, {

@@ -4,16 +4,19 @@ const { isAdmin, isObjectRequirementFullfilled } = require("../libs.cjs")
 const mongoose = require("mongoose")
 const getAllLogsTitles = async (req = request, res = response) => {
     try {
-        const params = req.params
+        const queries = req.query
         let page = 1, limit = 10
-        if (params.hasOwn("page")) {
-            page = Number(params.page)
+        if (queries.hasOwn("page")) {
+            page = Number(queries.page)
         }
-        if (params.hasOwn("limit")) {
-            limit = Number(params.limit)
+        if (queries.hasOwn("limit")) {
+            limit = Number(queries.limit)
         }
-        const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit)
-            .select({ title: 1, updatedAt: 1 , slug: 1})
+        const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 0}
+        if(queries.hasOwn("sid") && queries["sid"]=="1" && isAdmin(req)){
+            selectionObject._id = 1;
+        }
+        const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
         return res.status(200).json(
             {
                 data: logsTitlesArray
@@ -71,13 +74,14 @@ const addLog = async (req = request, res = response) => {
             {
                 title: bodyObj.title,
                 content: bodyObj.content,
-                tags: bodyObj.tags
+                tags: bodyObj.tags,
+                public: false
             }
         ) //default new logs are private
         const savedLog = await newLog.save()
         return res.status(202).json(
             {
-                id: savedLog._id
+                data: savedLog
             }
         )
     } catch (error) {
