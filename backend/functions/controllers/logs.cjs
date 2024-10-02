@@ -1,8 +1,25 @@
 const { request, response } = require("express")
 const Log = require("../../models/logs.cjs")
-const { isAdmin, isObjectRequirementFullfilled } = require("../libs.cjs")
+const {isObjectRequirementFullfilled } = require("../libs.cjs")
 const mongoose = require("mongoose")
-const getAllLogsTitles = async (req = request, res = response) => {
+const getLogsList = async (req = request, res = response) => {
+    try {
+        const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 0}
+        const filterQuery = {public:true}
+        const logsTitlesArray = await Log.find(filterQuery).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
+        return res.status(200).json(
+            {
+                data: logsTitlesArray
+            }
+        )
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            message: "Internal Server Failure"
+        })
+    }
+}
+const getLogsListForAdmin = async (req = request, res = response) => {
     try {
         const queries = req.query
         let page = 1, limit = 10
@@ -11,14 +28,9 @@ const getAllLogsTitles = async (req = request, res = response) => {
         }
         if (queries.hasOwn("limit")) {
             limit = Number(queries.limit)
-        }
-        const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 0}
-        const filterQuery = {public:true}
-        if(queries.hasOwn("sid") && queries["sid"]=="1" && isAdmin(req)){
-            selectionObject._id = 1;
-            filterQuery = {}
-        }
-        const logsTitlesArray = await Log.find(filterQuery).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
+        }        
+        const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 1}
+        const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
         return res.status(200).json(
             {
                 data: logsTitlesArray
@@ -216,4 +228,4 @@ const updateTitleAndContent = async (req, res) => {
         })
     }
 }
-module.exports = { getAllLogsTitles, getLog, addLog, changePublicStatus, deleteLog, updateTitle, updateTitleAndContent, getLogDataForAdmin }
+module.exports = { getLogsList, getLog, addLog, changePublicStatus, deleteLog, updateTitle, updateTitleAndContent, getLogDataForAdmin, getLogsListForAdmin }

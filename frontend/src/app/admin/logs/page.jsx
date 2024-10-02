@@ -13,7 +13,7 @@ const page = () => {
     const getLogsList = async (page=1)=>{
         // initial load and load more logs TODO: store these datas in local storage along with time expiration settings
         if(logsList.length==0) setListLoading(true)
-        const apiRoute = backendRoute+`/adminPrivate/logs?page=${page}&limit=${limit}&sid=1`
+        const apiRoute = backendRoute+`/adminPrivate/logs?page=${page}&limit=${limit}`
         const res = await fetch(apiRoute, {method: "GET"})
         const responseStatus = res.status
         if(responseStatus == 200) {

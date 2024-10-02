@@ -4,6 +4,7 @@ const router = express.Router()
 const LogsController = require("../../functions/controllers/logs.cjs")
 router
 .get("/:id", LogsController.getLogDataForAdmin)
+.get("/", LogsController.getLogsListForAdmin)
 .delete("/:id",LogsController.deleteLog)
 .patch("/:id/public-staus-change", LogsController.changePublicStatus)
 .patch("/:id", LogsController.updateTitleAndContent)

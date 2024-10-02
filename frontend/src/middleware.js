@@ -2,15 +2,23 @@ import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req) {
-    console.log("middleware was called")
+    // for login page
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-    const allowedEmails = ["aadarshbandhuaryal@gmail.com"];
-    if (token && allowedEmails.includes(token.email)) {
+    if (req.nextUrl.pathname === "/login") {
+        // for all users and admin
+        if (token) {
+            return NextResponse.redirect(new URL("/", req.url));
+        }
+        return NextResponse.next();
+    }
+    const privilagedEmails = ["aadarshbandhuaryal@gmail.com"];
+    if (token && privilagedEmails.includes(token.email)) {
+        // for admin only
         return NextResponse.next();
     }
     return NextResponse.redirect(new URL("/unauthorized", req.url));
 }
 
 export const config = {
-    matcher: ["/admin", "/admin/:path*"], 
+    matcher: ["/admin", "/admin/:path*", "/login"], 
 };
