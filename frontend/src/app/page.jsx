@@ -3,7 +3,7 @@ import Navbar from './components/Navbar'
 import MessageComponent from './components/MessageComponent'
 import { backendRoute } from './util'
 import { notFound } from 'next/navigation'
-
+import { signOut } from '@/app/auth'
 const fetchlogsList = async ()=>{
   try {
     const apiRoute = backendRoute + "/logs"

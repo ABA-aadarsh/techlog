@@ -1,6 +1,7 @@
 require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
+const Connect_Database = require("./functions/dbconfig.cjs")
 const app = express()
 const port = process.env.MODE == "DEVELOPMENT" ? 8080: null
 const LogsRouter = require("./routes/logs/index.cjs")
@@ -11,6 +12,8 @@ const corsOptions = {
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 }
+
+Connect_Database()
 
 app.use(cors(corsOptions))
 app.get("/",(req,res)=>{

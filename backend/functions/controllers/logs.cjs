@@ -6,7 +6,7 @@ const getLogsList = async (req = request, res = response) => {
     try {
         const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 0}
         const filterQuery = {public:true}
-        const logsTitlesArray = await Log.find(filterQuery).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
+        const logsTitlesArray = await Log.find(filterQuery).sort({ updatedAt: -1 }).select(selectionObject)
         return res.status(200).json(
             {
                 data: logsTitlesArray
@@ -21,12 +21,13 @@ const getLogsList = async (req = request, res = response) => {
 }
 const getLogsListForAdmin = async (req = request, res = response) => {
     try {
+        console.log("Fetching logs")
         const queries = req.query
         let page = 1, limit = 10
-        if (queries.hasOwn("page")) {
+        if (queries.hasOwnProperty("page")) {
             page = Number(queries.page)
         }
-        if (queries.hasOwn("limit")) {
+        if (queries.hasOwnProperty("limit")) {
             limit = Number(queries.limit)
         }        
         const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 1}
@@ -45,7 +46,7 @@ const getLogsListForAdmin = async (req = request, res = response) => {
 }
 const getLog = async (req = request, res = response) => {
     try {
-        if (!req.params.hasOwn("slug")) {
+        if (!req.params.hasOwnProperty("slug")) {
             return res.status(400).json({ message: "Slug Not Passed" })
         }
         const slug = req.params.slug
@@ -75,7 +76,7 @@ const getLog = async (req = request, res = response) => {
 }
 const getLogDataForAdmin = async (req = request, res = response) => {
     try {
-        if (!req.params.hasOwn("id")) {
+        if (!req.params.hasOwnProperty("id")) {
             return res.status(400).json({ message: "Id Not Passed" })
         }
         const id = req.params.id
@@ -128,8 +129,8 @@ const changePublicStatus = async (req=request, res=response) => {
         // required id and newStatus
         const params = req.params
         const body = req.body
-        if(!params.hasOwn("id")) return res.status(400).json({message:"Log id must be passed"});
-        if(!body.hasOwn("newPublicStatus")) return res.status(400).json({message: "Body object must have property: newPublicStatus"});
+        if(!params.hasOwnProperty("id")) return res.status(400).json({message:"Log id must be passed"});
+        if(!body.hasOwnProperty("newPublicStatus")) return res.status(400).json({message: "Body object must have property: newPublicStatus"});
 
         const updatedlog = await Log.findByIdAndUpdate(params.id, {public: body.newPublicStatus}, {runValidators:true, new:true}).select("_id")
         if(!updatedlog){
@@ -160,7 +161,7 @@ const changePublicStatus = async (req=request, res=response) => {
 const deleteLog = async (req, res) => {
     try {
         const params = req.params
-        if(!params.hasOwn("id")) return res.status(400).json({message:"Log id must be passed"});
+        if(!params.hasOwnProperty("id")) return res.status(400).json({message:"Log id must be passed"});
         const deletedLog = await Log.findByIdAndDelete(id)
         return res.status(206).json({message: "Log deleted"})
     } catch (error) {
@@ -177,7 +178,7 @@ const updateTitleAndContent = async (req, res) => {
     try {
         const params = req.params
         const body = req.body
-        if(!params.hasOwn("id")){
+        if(!params.hasOwnProperty("id")){
             return res.status(400).json(
                 {
                     message: "Log id is required"

@@ -15,6 +15,7 @@ const Connect_Database = async () =>{
                 autoIndex: false
             }
         )
+        console.log("Database connection was successful")
         return db
     }catch(error){
         console.log(error)

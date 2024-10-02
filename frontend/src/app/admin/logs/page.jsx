@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import AddNewForm from './_components/AddNewForm';
 import Link from 'next/link';
 import { backendRoute } from '@/app/util';
+import adminApiClient from '@/app/admin/adminApiClient';
 
 const page = () => {
     const limit = 10; // no of titles per one request
@@ -10,29 +11,35 @@ const page = () => {
     const [listLoading, setListLoading] = useState(false)
     const [btnLoading, setBtnLoading] = useState(false)
     const [logsList, setLogsList] = useState([])
+    let currentPage = 1
     const getLogsList = async (page=1)=>{
         // initial load and load more logs TODO: store these datas in local storage along with time expiration settings
-        if(logsList.length==0) setListLoading(true)
-        const apiRoute = backendRoute+`/adminPrivate/logs?page=${page}&limit=${limit}`
-        const res = await fetch(apiRoute, {method: "GET"})
-        const responseStatus = res.status
-        if(responseStatus == 200) {
-            const {data: list} = await res.json()
-            setLogsList((prev)=>[...prev, ...list])
-            currentPage+=1;
-        }else{
-            console.log("Could not fetch more")
-            setNoMoreLogs(true)
+        try {
+            if(logsList.length==0) setListLoading(true)
+            const apiRoute = backendRoute+`/logs/adminPrivate?page=${page}&limit=${limit}`
+            const res = await adminApiClient(apiRoute)
+            const responseStatus = res.status
+            if(responseStatus == 200) {
+                const {data: list} = await res.json()
+                setLogsList((prev)=>[...prev, ...list])
+                currentPage+=1;
+            }
+            else if(responseStatus == 403){
+                console.log("You are not authenticated for this")
+            }
+            else{
+                console.log("Could not fetch more")
+                setNoMoreLogs(true)
+            }
+        } catch (error) {
+            console.log(error)
         }
         setListLoading(false)
     }
     const createNewLog = async (title, tags)=>{
-        const apiRoute = backendRoute+`/adminPrivate/logs`
-        const res = await fetch (apiRoute, {
+        const apiRoute = backendRoute+`/logs/adminPrivate`
+        const res = await adminApiClient (apiRoute, {
             method: "POST",
-            headers: {
-                "Content-Type":"application/json"
-            },
             body: JSON.stringify({tags, title, content: ""})
         })
         if(res.status==202){
@@ -43,11 +50,12 @@ const page = () => {
         }
     }
     useEffect(()=>{
+        if(logsList.length!=0) return
         getLogsList(1);
     },[])
     return (
         <div>
-            <div>
+            <div className='pt-2 px-4'>
                 <AddNewForm createNewLog={createNewLog}/>
             </div>
             <div>
@@ -64,7 +72,7 @@ const page = () => {
                     })
                 }
                 {
-                    !noMoreLogs &&
+                    (!noMoreLogs && !listLoading && logsList.length!=0) &&
                     <button
                         onClick={async ()=>{
                             if(btnLoading==true) return

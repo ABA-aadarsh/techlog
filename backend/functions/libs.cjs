@@ -11,13 +11,14 @@ const isAdmin = (req) => {
     if(adminAuthenticated){
         return true
     }
+    console.log(headers)
     return false
 }
 
 const isObjectRequirementFullfilled = (obj, properties=[])=>{
     // check is obj has all properties
     for(let i=0; i<properties.length; i++){
-        if(!obj.hasOwn(properties[i])) return false
+        if(!obj.hasOwnProperty(properties[i])) return false
     }
     return true
 }
