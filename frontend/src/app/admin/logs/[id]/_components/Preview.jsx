@@ -20,7 +20,6 @@ const Preview = ({title,content,tags}) => {
   }
   useEffect(()=>{
     processMarkdown(content)
-    console.log(content)
   },[content])
   if(loading) {
     return (

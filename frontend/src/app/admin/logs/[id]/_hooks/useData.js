@@ -8,12 +8,9 @@ export const useData = ()=>{
     const [tags, setTags] = useState([])
 
     const setValues = ({_title, _content, _tags}) => {
-        if(typeof(_title)!="string" || typeof(_content)!="string" || !Array.isArray(_tags)){
-            console.log("Invalid data types")
-            return false
-        }
-        setTitle(_title)
-        setContent(_content)
+        if(typeof(_title)=="string" || _title=="") setTitle(_title);
+        if(typeof(_content)=="string" || _content=="") setContent(_content);
+        if(Array.isArray(_tags) && _tags.length>0)
         setTags(()=>{
             return _tags.map(i=>(
                 {

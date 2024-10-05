@@ -108,7 +108,8 @@ const addLog = async (req = request, res = response) => {
                 title: bodyObj.title,
                 content: bodyObj.content,
                 tags: bodyObj.tags,
-                public: false
+                public: false,
+                slug: bodyObj.title.toLowerCase().split(" ").join("-")
             }
         ) //default new logs are private
         const savedLog = await newLog.save()
@@ -118,6 +119,14 @@ const addLog = async (req = request, res = response) => {
             }
         )
     } catch (error) {
+        if(error instanceof mongoose.Error.ValidationError){
+            console.log(error)
+            return res.status(406).json(
+                {
+                    message: "New update value fails schema validation"
+                }
+            )
+        }
         console.log(error)
         return res.status(500).json({
             message: "Internal Server Failure"

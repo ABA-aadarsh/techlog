@@ -4,21 +4,24 @@ import React, { useEffect, useState } from 'react'
 import { useData } from './_hooks/useData';
 import Editor from './_components/Editor';
 import Preview from './_components/Preview';
-import {  X } from 'lucide';
 import { backendRoute } from '@/app/util';
+import apiClient from '../../adminApiClient';
+import { buttonVariants } from '@/components/ui/button';
+import { XIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const page = ({params}) => {
     const [loading,setLoading] = useState(true)
     const [error,setError]=useState(false)
-
+    const router = useRouter()
     const {
         addTag, content, deleteTag, setValues, tags, title, updateContent, updateTitle
     }=useData()
     const [newTagValue,setNewTagValue]=useState("")
     const fetchData = async (id="")=>{
         try {
-            const apiRoute = backendRoute+`/adminPrivate/logs/${id}`
-            const res = await fetch(apiRoute,{
+            const apiRoute = backendRoute+`/logs/adminPrivate/${id}`
+            const res = await apiClient(apiRoute,{
                 method: "GET"
             })
             if(res.status==201){
@@ -42,12 +45,9 @@ const page = ({params}) => {
     const saveLog = async (id)=>{
         // updation
         try {
-            const apiRoute =backendRoute+`/adminPrivate/logs/${id}`
-            const res = await fetch(apiRoute, {
+            const apiRoute =backendRoute+`/logs/adminPrivate/${id}`
+            const res = await apiClient(apiRoute, {
                 method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
                 body: JSON.stringify({tags,title,content})
             })
             const responseStatus = res.status
@@ -62,13 +62,13 @@ const page = ({params}) => {
         }
     }
     useEffect(()=>{
-        // setValues({
-        //     _title: "Template Title",
-        //     _content: "# Template Content",
-        //     _tags: ["Tag1", "Tag2"]
-        // })
-        // setLoading(false)
-        fetchData(params.id)
+        setValues({
+            _title: "Template Title",
+            _content: "# Template Content",
+            _tags: ["Tag1", "Tag2"]
+        })
+        setLoading(false)
+        // fetchData(params.id)
     },[params.id])
     if(error){
         return (
@@ -86,48 +86,83 @@ const page = ({params}) => {
     }
 
     return (
-        <div>
-            <nav>
+        <div className="flex flex-col w-full h-dvh">
+            <nav className="h-[75px] flex items-center">
                 <div>
-                    <button onClick={async()=>{
+                    <button
+                    className={buttonVariants({variant: "link"})}
+                    onClick={()=>{
+                        router.push("/admin/logs")
+                    }}>(Back)</button>
+                </div>
+                <div className="ml-auto">
+                    <button
+                    className={buttonVariants({variant: "link"})}
+                    onClick={async()=>{
                         await saveLog(params.id)
                     }}>Save Log</button>
                 </div>
             </nav>
-            <main className='grid grid-rows-[100px_auto] grid-cols-2 grid-flow-col w-full h-dvh'>
+            <main className='flex-grow grid grid-rows-[100px_auto] grid-cols-2 grid-flow-col'>
                 <section className='col-span-2'>
-                    <div>
+                    <div className="flex items-center justify-center">
                         {/* title */}
-                        <input type="text" value={title} onChange={(e)=>updateTitle(e.target.value)}/>
+                        <input type="text" value={title} onChange={(e)=>updateTitle(e.target.value)}
+                            placeholder="Title"
+                            className='max-w-[500px] w-4/5 p-1 text-sm rounded-sm text-black bg-white border-2 border-zinc-400'
+                        />
                     </div>
-                    <div>
+                    <div className="px-2 flex items-center justify-between">
                         {/* tags */}
-                        <div>
-                            <input type="text" value={newTagValue} onChange={(e)=>setNewTagValue(e.target.value)} />
+                        <div className="text-sm flex items-center gap-2">
+                            <input type="text" value={newTagValue} onChange={(e)=>setNewTagValue(e.target.value)} 
+                                className='p-1 w-[100px] text-sm rounded-sm text-black bg-white border-2 border-zinc-400'
+                            />
                             <button onClick={()=>addTag(newTagValue)}>Add</button>
                         </div>
-                        <ul>
-                            {/* {
-                                tags.length>0 &&
-                                tags.map(i=>(
-                                    <li key={i.id}>
-                                        <span>{i.tag}</span>
-                                        <X onClick={()=>deleteTag(i.id)}/>
-                                    </li> 
-                                ))
-                            } */}
-                        </ul>
+                        {tags.length==0 && <p>No Tags</p>}
+                        {
+                            tags.length>0 &&
+                            (
+                                <div className="text-sm">
+                                    <ul className='mx-2 inline-flex items-center gap-2'>
+                                        {/* {
+                                            tags.map((tagObject,_)=>(
+                                                <li key={tagObject.id}>
+                                                    {tagObject.tag}
+                                                    <X className='cursor-pointer' onClick={()=>deleteTag(tagObject.id)}/>
+                                                </li>
+                                            ))
+                                        } */}
+                                        {
+                                            tags.map((tagObject)=>{
+                                                return (
+                                                    <li key={tagObject.id} className="flex gap-1">
+                                                        <span>
+                                                            {tagObject.tag}
+                                                        </span>
+                                                        <XIcon size={10} className='hover:text-red-400 cursor-pointer ' onClick={()=>deleteTag(tagObject.id)}/>
+                                                    </li>
+                                                )
+                                            })
+                                        }
+                                    </ul>
+                                    <p className="inline-block"> | Tags</p>
+                                </div>
+                            )
+                        }
+                        
                     </div>
                 </section>
-                <section className='col-span-1'>
+                <section className='col-span-1 overflow-y-auto px-1'>
+
                     <Editor content={content} updateContent={updateContent}/>
                 </section>
-                <section className='col-span-1'>
+                <section className='col-span-1 overflow-y-auto px-1'>
                     <Preview title={title} content={content} tags={tags}/>
                 </section>
             </main>
-        </div>
-    )
+        </div>    )
 }
 
 export default page

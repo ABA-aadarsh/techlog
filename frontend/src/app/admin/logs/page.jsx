@@ -50,8 +50,9 @@ const page = () => {
         }
     }
     useEffect(()=>{
-        if(logsList.length!=0) return
-        getLogsList(1);
+        if(logsList.length!=0 && listLoading==false){
+            getLogsList(1);
+        }
     },[])
     return (
         <div>

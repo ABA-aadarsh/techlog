@@ -12,6 +12,7 @@ export async function middleware(req) {
         return NextResponse.next();
     }
     const privilagedEmails = ["aadarshbandhuaryal@gmail.com"];
+    console.log(token)
     if (token && privilagedEmails.includes(token.email)) {
         // for admin only
         return NextResponse.next();

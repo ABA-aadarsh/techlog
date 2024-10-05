@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import Github from "next-auth/providers/github"
+import jwt from "jsonwebtoken"
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Github],
   session: {
@@ -8,7 +9,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.email = user.email;
+        token.accessToken = jwt.sign({ email: user.email }, process.env.AUTH_SECRET);
       }
       return token;
     },
@@ -18,3 +19,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 })
+
