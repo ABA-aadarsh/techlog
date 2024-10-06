@@ -5,6 +5,7 @@ import {useSession} from "next-auth/react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {useRouter} from "next/navigation"
 import User from './User'
+import { buttonVariants } from '@/components/ui/button'
 
 const Navbar = ({}) => {
     const homeTitle = "Home"
@@ -13,14 +14,11 @@ const Navbar = ({}) => {
     const isLoading = status === "loading"
   return (
     <nav className='flex justify-center'>
-        <div className='w-full px-4 py-4 flex items-center justify-between'>
-            <div>
-                <Link href={"/"}>
-                    <h1>{homeTitle}</h1>
-                </Link>
-            </div>
-            <div>
+        <div className='w-full py-4 flex items-center justify-between'>
                 <ul className='flex items-center gap-4'>
+                    <li>
+                        <Link href={"/"}>Home</Link>
+                    </li>
                     <li>
                         <Link href={"/projects"}>Projects</Link>             
                     </li>
@@ -28,10 +26,12 @@ const Navbar = ({}) => {
                         <Link href={"/logs"}>Logs</Link>
                     </li>
                 </ul>
+            <div></div>
+            <div className='flex items-center gap-4'>
 
-                <div>
+                <div className='w-10 h-10'>
                     {isLoading?
-                        "...":
+                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>:
                         <>
                             {(session) ?
                                 <User
@@ -39,9 +39,9 @@ const Navbar = ({}) => {
                                     name={session.user.name}
                                 ></User>
                                 :
-                                <button
-                                    onClick={()=>router.push("/login")}
-                                >Login</button>
+                                <Link href={"/login"}
+                                    className={buttonVariants({variant: "outline"})}
+                                >Login</Link>
                             }
                         </>
                     }

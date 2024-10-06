@@ -21,18 +21,19 @@ const User = ({image, name}) => {
     const [openBox, setOpenBox] = useState(false)
     return (
         <div className='relative'>
-            <Avatar className="cursor-pointer" onClick={() => setOpenBox(!openBox)}>
+            <Avatar className="cursor-pointer" onClick={() => setOpenBox(!openBox)}
+                style={{ width: '40px', height: '40px' }}>
                 <AvatarImage src={image} />
                 <AvatarFallback>{name[0]}</AvatarFallback>
             </Avatar>
             <div className={`flex flex-col ${openBox ? "block" : "hidden"} absolute right-0 top-14 
-            bg-slate-50 rounded-lg border-2 border-zinc-500`}>
-                <div className=' p-5  rounded-lg'>
-                    <img src={image}></img>
-                    <p>{name}</p>
+            bg-slate-50 rounded-lg border-2 border-zinc-500 p-2`}>
+                <div className='bg-white p-5  rounded-lg border-b-2 border-zinc-500' >
+                    <img src={image} className="w-10 h-10 rounded-full"></img>
+                    <p className="ml-2">{name}</p>
                 </div>
-                <div>
-                    <button onClick={handleSignOut}>Sign Out</button>
+                <div className='bg-white p-2 rounded-lg'>
+                    <Button onClick={handleSignOut}>Sign Out</Button>
                 </div>
             </div>
         </div>
