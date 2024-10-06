@@ -6,8 +6,9 @@ export const useData = ()=>{
     const [title,setTitle] = useState("");
     const [content, setContent] = useState("")
     const [tags, setTags] = useState([])
+    const [pubic, setPublic] = useState(false)
 
-    const setValues = ({_title, _content, _tags}) => {
+    const setValues = ({_title, _content, _tags, _public}) => {
         if(typeof(_title)=="string" || _title=="") setTitle(_title);
         if(typeof(_content)=="string" || _content=="") setContent(_content);
         if(Array.isArray(_tags) && _tags.length>0)
@@ -19,6 +20,7 @@ export const useData = ()=>{
                 }
             ))
         })
+        if(typeof(_public)=="boolean") setPublic(_public)
     }
     const updateTitle = (_title)=>{
         setTitle(_title)
@@ -32,6 +34,9 @@ export const useData = ()=>{
     const addTag = (newTag)=>{
         setTags(prev=>[...prev, {id:uuidv4(), tag:newTag }])
     }
+    const togglePublic = ()=>{
+        setPublic(prev=>!prev)
+    }
     return {
         setValues,
         updateContent,
@@ -40,6 +45,8 @@ export const useData = ()=>{
         addTag,
         title,
         content,
-        tags
+        tags,
+        pubic,
+        togglePublic
     }
 }

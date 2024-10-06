@@ -34,23 +34,27 @@ const SettingPanel = ({id,publicStatus=false}) => {
         }
     }
   return (
-    <div>
-        <ul>
+    <div className="mx-3">
+        <ul className='flex flex-row gap-2'>
             <li>
+                <span>(</span> 
                 <BtnWithDialog
                     heading={`Delete log: ${id}`}
                     message={"This action is irrevertible and would cause permanent loss of the log. Are you sure about deleting this log?"}
                     onConfirmFunction={deleteLog}
                     triggerText={"Delete Log"}
                 />
+                <span>)</span>
             </li>
             <li>
+                <span>(</span> 
                 <BtnWithDialog
                     heading={"Change Public Status"}
                     message={"Changing the public status of log might cause the server to rebuild certain pages? Are you sure about it?"}
                     onConfirmFunction={updatePublicStatus}
                     triggerText={isPublic?"Make Private":"Make Public"}
                 />
+                <span>)</span>
             </li>
         </ul>
     </div>

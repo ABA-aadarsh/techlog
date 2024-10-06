@@ -32,6 +32,13 @@ const getLogsListForAdmin = async (req = request, res = response) => {
         }        
         const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 1}
         const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
+        if (logsTitlesArray.length == 0) {
+            return res.status(404).json(
+                {
+                    message: "No logs found"
+                }
+            )
+        }
         return res.status(200).json(
             {
                 data: logsTitlesArray

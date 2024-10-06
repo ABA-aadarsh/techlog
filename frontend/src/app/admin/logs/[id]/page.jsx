@@ -9,13 +9,14 @@ import apiClient from '../../adminApiClient';
 import { buttonVariants } from '@/components/ui/button';
 import { XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import SettingPanel from './_components/SettingPanel';
 
 const page = ({params}) => {
     const [loading,setLoading] = useState(true)
     const [error,setError]=useState(false)
     const router = useRouter()
     const {
-        addTag, content, deleteTag, setValues, tags, title, updateContent, updateTitle
+        addTag, content, deleteTag, setValues, tags, title, updateContent, updateTitle, public:isPublic, setPublic, togglePublic
     }=useData()
     const [newTagValue,setNewTagValue]=useState("")
     const fetchData = async (id="")=>{
@@ -62,13 +63,13 @@ const page = ({params}) => {
         }
     }
     useEffect(()=>{
-        setValues({
-            _title: "Template Title",
-            _content: "# Template Content",
-            _tags: ["Tag1", "Tag2"]
-        })
-        setLoading(false)
-        // fetchData(params.id)
+        // setValues({
+        //     _title: "Template Title",
+        //     _content: "# Template Content",
+        //     _tags: ["Tag1", "Tag2"]
+        // })
+        // setLoading(false)
+        fetchData(params.id)
     },[params.id])
     if(error){
         return (
@@ -102,6 +103,7 @@ const page = ({params}) => {
                         await saveLog(params.id)
                     }}>Save Log</button>
                 </div>
+                <SettingPanel id={params.id} publicStatus={isPublic}/>
             </nav>
             <main className='flex-grow grid grid-rows-[100px_auto] grid-cols-2 grid-flow-col'>
                 <section className='col-span-2'>
@@ -126,22 +128,11 @@ const page = ({params}) => {
                             (
                                 <div className="text-sm">
                                     <ul className='mx-2 inline-flex items-center gap-2'>
-                                        {/* {
-                                            tags.map((tagObject,_)=>(
-                                                <li key={tagObject.id}>
-                                                    {tagObject.tag}
-                                                    <X className='cursor-pointer' onClick={()=>deleteTag(tagObject.id)}/>
-                                                </li>
-                                            ))
-                                        } */}
                                         {
                                             tags.map((tagObject)=>{
                                                 return (
-                                                    <li key={tagObject.id} className="flex gap-1">
-                                                        <span>
-                                                            {tagObject.tag}
-                                                        </span>
-                                                        <XIcon size={10} className='hover:text-red-400 cursor-pointer ' onClick={()=>deleteTag(tagObject.id)}/>
+                                                    <li key={tagObject.id} className={buttonVariants({variant:"link"}) + " cursor-pointer"} onClick={()=>deleteTag(tagObject.id)}>
+                                                        {tagObject.tag}
                                                     </li>
                                                 )
                                             })
