@@ -3,32 +3,35 @@ import React, { useState } from 'react'
 import BtnWithDialog from './BtnWithDialog'
 import { useRouter } from 'next/navigation';
 import { backendRoute } from '@/app/util';
+import apiClient from '@/app/admin/adminApiClient';
 
-const SettingPanel = ({id,publicStatus=false}) => {
+const SettingPanel = ({id,publicStatus, pathRevalidator, slug}) => {
     const router = useRouter()
     const [isPublic, setIsPublic]=useState(publicStatus)
     const updatePublicStatus = async ()=>{
-        const apiRoute = backendRoute+`/adminPrivate/logs/${id}/public-staus-change`
-        const res = await fetch(apiRoute,{
+        const apiRoute = backendRoute+`/logs/adminPrivate/${id}/public-staus-change`
+        const res = await apiClient(apiRoute, {
             method:"PATCH",
-            headers: { "Content-Type": "application/json"},
-            body: JSON.stringify({newPublicStatus: !isPublic})
+            body: JSON.stringify({newPublicStatus: !isPublic}) 
         })
         if(res.status==200){
             setIsPublic(!isPublic)
+            pathRevalidator("/logs/"+slug)
         }else{
             console.log("Failed to update public status")
         }
     }
     const deleteLog = async ()=>{
-        const apiRoute = backendRoute+`/adminPrivate/logs/${id}`
-        const res = await fetch(apiRoute,{
+        const apiRoute = backendRoute+`/logs/adminPrivate/${id}`
+        const res = await apiClient(apiRoute, {
             method:"DELETE"
         })
-        if(res.status==200){
+        if(res.status==206){
             console.log("Log deleted")
+            if(publicStatus){
+                await pathRevalidator("/logs/"+slug)
+            }
             router.push("/admin/logs")
-            router.push()
         }else{
             console.log("Failed to delete log")
         }

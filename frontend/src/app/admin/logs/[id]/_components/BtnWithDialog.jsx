@@ -28,6 +28,7 @@ const BtnWithDialog = ({onConfirmFunction, message, heading, triggerText="Confir
         <button
           onClick={async ()=>{
             await onConfirmFunction()
+            setopen(false)
           }}
         >
           Confirm

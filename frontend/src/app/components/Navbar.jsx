@@ -15,23 +15,23 @@ const Navbar = ({}) => {
   return (
     <nav className='flex justify-center'>
         <div className='w-full py-4 flex items-center justify-between'>
-                <ul className='flex items-center gap-4'>
-                    <li>
-                        <Link href={"/"}>Home</Link>
-                    </li>
-                    <li>
-                        <Link href={"/projects"}>Projects</Link>             
-                    </li>
-                    <li>
-                        <Link href={"/logs"}>Logs</Link>
-                    </li>
-                </ul>
-            <div></div>
+            <ul className='flex items-center gap-4'>
+                <li>
+                    <Link href={"/"}>Home</Link>
+                </li>
+                <li>
+                    <Link href={"/projects"}>Projects</Link>             
+                </li>
+                <li>
+                    <Link href={"/logs"}>Logs</Link>
+                </li>
+            </ul>
+            
             <div className='flex items-center gap-4'>
 
                 <div className='w-10 h-10'>
                     {isLoading?
-                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>:
+                        <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>:
                         <>
                             {(session) ?
                                 <User

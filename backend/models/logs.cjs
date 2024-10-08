@@ -15,7 +15,8 @@ const schema = new mongoose.Schema(
         },
         title: {
             type: Types.String,
-            required: [true, "Title is Required for saving a post"]
+            required: [true, "Title is Required for saving a post"],
+            unique: [true, "Same Title already exist"]
         },
         public: {
             type: Types.Boolean,

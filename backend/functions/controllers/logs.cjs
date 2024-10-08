@@ -178,6 +178,7 @@ const deleteLog = async (req, res) => {
     try {
         const params = req.params
         if(!params.hasOwnProperty("id")) return res.status(400).json({message:"Log id must be passed"});
+        const id = params.id
         const deletedLog = await Log.findByIdAndDelete(id)
         return res.status(206).json({message: "Log deleted"})
     } catch (error) {

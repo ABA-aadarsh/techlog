@@ -80,12 +80,15 @@ async function page() {
             {
               blogsList.map((i,_)=>(
                 <li key={_} className='mb-2'>
-                  <h2 className='text-lg font-semibold'>{i.title}</h2>
+                  <Link href={`/logs/${i.slug}`}>
+                    <h2 className='text-lg font-semibold'>{i.title}</h2>
+                  </Link>
                   <p className='text-sm text-gray-500'>{i.updatedAt}</p>
                   <ul className='flex flex-wrap'>
                     {
-                      i.tags.map((j,__)=>(
-                        <li key={__} className='mr-2 mb-2 px-2 py-1 border rounded'>{j}</li>
+                      (Array.isArray(i.tags) && i.tags.length>0) &&
+                      i.tags.map((j,_)=>(
+                        <li key={_} className='mr-2 mb-2 px-2 py-1 border rounded'>{j}</li>
                       ))
                     }
                   </ul>

@@ -6,22 +6,39 @@ import { unified } from 'unified';
 import remarkRehype from 'remark-rehype';
 import remarkParse from 'remark-parse';
 import rehypeStringify from 'rehype-stringify';
+import { fetchLog } from './getData';
+import Link from 'next/link';
 
-const page =async ({params}) => {
-    const fetchLog = async  (slug="") => {
-        const apiRoute = backendRoute+`/logs/${slug}`
-        const res = await fetch(apiRoute,{
-            method:"GET"
-        })
-        if(res.status==201){
-            const {data: logdata} = await res.json()
-            return logdata
-        }else{
-            notFound()
+// generate static params
+export async function generateStaticParams() {
+    const res = await fetch(backendRoute + "/logs")
+    const {data} = await res.json()
+    return data.map((log)=>({
+        slug: log.slug
+    }))
+}
 
+// generate metadata
+export async function generateMetadata({params}) {
+    const {status, payload} = await fetchLog(params.slug)
+    if(status==false){
+        return {
+            title: "Log not found",
+            description: "Log not found"
         }
     }
-    const logData = fetchLog(params.slug)
+    return {
+        title: payload.metaData.title,
+        description: payload.metaData.description   
+    }
+}
+
+const page =async ({params}) => {
+    const {status, payload} = await fetchLog(params.slug)
+    if(status==false){
+        notFound()
+    }
+    const logData = payload.logData
     const processor = unified()
     .use(remarkParse)
     .use(remarkRehype)
@@ -42,17 +59,17 @@ const page =async ({params}) => {
                     {/* heading */}
                     <h1>{logData.title}</h1>
                     <div>
-                        <span>{String(i.updatedAt)}</span>
+                        {/* <span>{String(logData.updatedAt)}</span> */}
                         <div>
-                            {logData.tags.map((tag, _)=>(
+                            {/* {logData.tags.map((tag, _)=>(
                                 <span key={_}>
                                     {tag}
                                 </span>
-                            ))}
+                            ))} */}
                         </div>
                     </div>
                 </div>
-                <div dangerouslySetInnerHTML={{__html:htmlContent}}></div>
+                <div dangerouslySetInnerHTML={{__html:String(htmlContent)}}></div>
             </article>
         </main>
     </>
