@@ -5,7 +5,9 @@ import remarkRehype from 'remark-rehype';
 import remarkParse from 'remark-parse';
 import rehypeStringify from 'rehype-stringify';
 import matter from "gray-matter"
-
+import rehypePrettyCode from "rehype-pretty-code";
+import { transformerCopyButton } from '@rehype-pretty/transformers';
+import HTMLStyler from '@/app/components/HTMLStyler';
 const Preview = ({title,content,tags}) => {
   const [previewhtml, setPreviewhtml] = useState("")
   const [loading, setLoading] = useState(true)
@@ -17,8 +19,18 @@ const Preview = ({title,content,tags}) => {
     .use(remarkParse)
     .use(remarkRehype)
     .use(rehypeStringify)
+    .use(rehypePrettyCode, {
+      theme: "one-dark-pro",
+      defaultLang: "plaintext",
+      transformers: [
+        transformerCopyButton({
+          visibility: 'always',
+          feedbackDuration: 3_000,
+        })
+      ]
+    })
     const htmlContent = await processor.process(mdContent)
-    setPreviewhtml(htmlContent)
+    setPreviewhtml(String(htmlContent))
     setLoading(false)
   }
   useEffect(()=>{
@@ -30,8 +42,9 @@ const Preview = ({title,content,tags}) => {
     )
   }
   return (
-    <div className='prose dark:prose-invert' dangerouslySetInnerHTML={{__html:previewhtml}}>
-    </div>
+    <HTMLStyler
+      html={previewhtml}
+    />
   )
 }
 

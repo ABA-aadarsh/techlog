@@ -23,12 +23,15 @@ const fetchlogsList = async ()=>{
   }
 }
 
+export const metadata = {
+  title: "ABA-TechLog",
+  description: "Technical Log Website of Aadarsh Bandhu Aryal (aba-aadarsh)",
+};
+
 async function page() {
   const blogsList = await fetchlogsList()
   const programmingParadigms = ["web", "temrinal", "compiler"]
   return (
-    <div className='max-w-[700px] px-2 w-4/5 mx-auto'>
-      <Navbar/>
       <main className='mt-5'>
         <div>
           <div className="mb-5">
@@ -39,7 +42,7 @@ async function page() {
             
           </div>
           <div className="mb-5">
-            <p className = "text-lg mb-1">Writing about the details about my projects, and the building process on various interests.</p>
+            <p className = "text-lg mb-5">Writing about the details about my projects, and the building process on various interests.</p>
             <p className = "text-lg text-center">
               <span className="mr-3">Currently interested on </span>
                 {
@@ -98,8 +101,6 @@ async function page() {
           </ul>
         </div>
       </main>
-
-    </div>
   )
 }
 

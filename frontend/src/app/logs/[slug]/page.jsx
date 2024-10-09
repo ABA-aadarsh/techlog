@@ -7,7 +7,9 @@ import remarkRehype from 'remark-rehype';
 import remarkParse from 'remark-parse';
 import rehypeStringify from 'rehype-stringify';
 import { fetchLog } from './getData';
-import Link from 'next/link';
+import rehypePrettyCode from 'rehype-pretty-code';
+import { transformerCopyButton } from '@rehype-pretty/transformers';
+import HTMLStyler from '@/app/components/HTMLStyler';
 
 // generate static params
 export async function generateStaticParams() {
@@ -43,21 +45,29 @@ const page =async ({params}) => {
     .use(remarkParse)
     .use(remarkRehype)
     .use(rehypeStringify)
+    .use(rehypePrettyCode, {
+      theme: "one-dark-pro",
+      defaultLang: "plaintext",
+      transformers: [
+        transformerCopyButton({
+          visibility: 'always',
+          feedbackDuration: 3_000,
+        })
+      ]
+    })
     const htmlContent = await processor.process(logData.content)
   return (
-    <>
-        <nav>
-            <ul>
-                <li>
-                    <Link href={"/"}>Logs</Link>
-                </li>
-            </ul>
-        </nav>
-        <main>
-            <article className='prose dark:prose-invert'>
+        <main className='mt-5'>
+            <article className='mb-10'>
                 <div>
                     {/* heading */}
-                    <h1>{logData.title}</h1>
+                    <div className="mb-10">
+                        <h1
+                        className='text-4xl font-semibold text-zinc-900 text-left mb-2'
+                        >{logData.title}</h1>
+                        <span>{String(logData.updatedAt)}</span>
+                    </div>
+                    <hr className=" block mb-10"/>
                     <div>
                         {/* <span>{String(logData.updatedAt)}</span> */}
                         <div>
@@ -69,10 +79,9 @@ const page =async ({params}) => {
                         </div>
                     </div>
                 </div>
-                <div dangerouslySetInnerHTML={{__html:String(htmlContent)}}></div>
+                <HTMLStyler html={String(htmlContent)}/>
             </article>
         </main>
-    </>
   )
 }
 

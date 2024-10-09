@@ -112,7 +112,7 @@ const ClientWrapper = ({params, pathRevalidator}) => {
                     slug={oldSlug}
                 />
             </nav>
-            <main className='flex-grow grid grid-rows-[100px_auto] grid-cols-2 grid-flow-col'>
+            <main className='flex-grow grid grid-rows-[100px_auto] grid-cols-2 grid-flow-col h-full overflow-hidden'>
                 <section className='col-span-2'>
                     <div className="flex items-center justify-center">
                         {/* title */}
@@ -152,11 +152,10 @@ const ClientWrapper = ({params, pathRevalidator}) => {
                         
                     </div>
                 </section>
-                <section className='col-span-1 overflow-y-auto px-1'>
-
+                <section className='col-span-1 px-2 h-full overflow-hidden'>
                     <Editor content={content} updateContent={updateContent}/>
                 </section>
-                <section className='col-span-1 overflow-y-auto px-1'>
+                <section className='col-span-1 px-3 h-full overflow-hidden'>
                     <Preview title={title} content={content} tags={tags}/>
                 </section>
             </main>

@@ -8,8 +8,6 @@ import User from './User'
 import { buttonVariants } from '@/components/ui/button'
 
 const Navbar = ({}) => {
-    const homeTitle = "Home"
-    const router = useRouter()
     const {data: session, status} = useSession ()
     const isLoading = status === "loading"
   return (

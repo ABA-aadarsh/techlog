@@ -1,7 +1,10 @@
+"use client";
 import localFont from "next/font/local";
 import "./globals.css";
 import ThemesProvider from "@/app/components/ThemesProvider"
 import { SessionProvider } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import Navbar from "./components/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,12 +17,10 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata = {
-  title: "ABA-TechLog",
-  description: "Technical Log Website of Aadarsh Bandhu Aryal (aba-aadarsh)",
-};
-
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+  const showNavbar = pathname === '/' || /^\/logs\/[\w-]+$/.test(pathname)
+
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
@@ -32,7 +33,20 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <SessionProvider>
-            {children}
+            {showNavbar ?
+              (
+              <div className='max-w-[800px] px-2 w-4/5 mx-auto'>
+                {/* <Navbar /> */}
+                <>
+                  {children}
+                </>
+              </div>
+              ): (
+                <>
+                  {children}
+                </>
+              )
+            }
           </SessionProvider>
         </ThemesProvider>
       </body>
