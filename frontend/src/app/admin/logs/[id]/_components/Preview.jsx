@@ -31,6 +31,8 @@ const Preview = ({title,content,tags}) => {
     })
     const htmlContent = await processor.process(mdContent)
     setPreviewhtml(String(htmlContent))
+    console.log(htmlContent)
+    console.log(String(htmlContent))
     setLoading(false)
   }
   useEffect(()=>{

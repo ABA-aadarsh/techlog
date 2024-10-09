@@ -55,7 +55,30 @@ const page =async ({params}) => {
         })
       ]
     })
-    const htmlContent = await processor.process(logData.content)
+    let htmlContent = String(await processor.process(logData.content))
+    const globalFindRegex = /<h2[^>]*>(.*?)<\/h2>/g
+    const localFindRegex = /<h2[^>]*>(.*?)<\/h2>/
+    // logs headings for navigations are as H2
+    const headings = htmlContent.match(globalFindRegex).map(h=>{
+        const contentMatch = h.match(localFindRegex)
+        return contentMatch[1]
+    })
+    htmlContent = htmlContent.replace(globalFindRegex, (tagMatch)=>{
+        const contentMatch = tagMatch.match(localFindRegex)
+        let url = ""
+        let content = ""
+        if(contentMatch){
+            url = contentMatch[1].trim().replace(/ /g, "-").toLowerCase()
+            content = contentMatch[1]
+        }
+        return `
+            <h2
+                id="${url}"
+            >
+                ${content}
+            </h2>
+        `
+    })
   return (
         <main className='mt-5'>
             <article className='mb-10'>
@@ -79,10 +102,41 @@ const page =async ({params}) => {
                         </div>
                     </div>
                 </div>
-                <HTMLStyler html={String(htmlContent)}/>
+                <HTMLStyler html={htmlContent}/>
             </article>
+            <div className="sticky top-0">
+                <ul>
+                    {headings.map((heading, _)=>(
+                        <li key={_}>
+                            <a href={`#${heading.trim().toLowerCase().replaceAll(/ /g, "-")}`}>{heading}</a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </main>
   )
 }
 
 export default page
+
+
+
+
+
+
+/*
+    '<h1>Meow</h1><h2>hello</h2><h2>Bow dow</h2>'.replace(regex, (tagMatch)=>{
+  const contentMatch = tagMatch.match(/<h2>(.*?)<\/h2>/)
+  let url = ""
+  let content = ""
+  if(contentMatch && contentMatch[1]){
+    url = contentMatch[1].trim().replaceAll(/ /g, "-").toLowerCase()
+    content = contentMatch[1]
+  }
+  return `
+    <h2 id="${url}">
+    ${content}
+    </h2>
+  `
+})
+*/
