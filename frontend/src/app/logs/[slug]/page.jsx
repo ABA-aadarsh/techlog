@@ -7,9 +7,10 @@ import remarkRehype from 'remark-rehype';
 import remarkParse from 'remark-parse';
 import rehypeStringify from 'rehype-stringify';
 import { fetchLog } from './getData';
-import rehypePrettyCode from 'rehype-pretty-code';
-import { transformerCopyButton } from '@rehype-pretty/transformers';
 import HTMLStyler from '@/app/components/HTMLStyler';
+import rehypePrettyCode from 'rehype-pretty-code';
+import remarkGfm from 'remark-gfm';
+import ScrollLinkForHeadings from './_components/ScrollLinkForHeadings';
 
 // generate static params
 export async function generateStaticParams() {
@@ -43,23 +44,17 @@ const page =async ({params}) => {
     const logData = payload.logData
     const processor = unified()
     .use(remarkParse)
+    .use(remarkGfm)
     .use(remarkRehype)
-    .use(rehypeStringify)
     .use(rehypePrettyCode, {
-      theme: "one-dark-pro",
-      defaultLang: "plaintext",
-      transformers: [
-        transformerCopyButton({
-          visibility: 'always',
-          feedbackDuration: 3_000,
-        })
-      ]
+        theme: 'one-dark-pro',
     })
+    .use(rehypeStringify)
     let htmlContent = String(await processor.process(logData.content))
     const globalFindRegex = /<h2[^>]*>(.*?)<\/h2>/g
     const localFindRegex = /<h2[^>]*>(.*?)<\/h2>/
     // logs headings for navigations are as H2
-    const headings = htmlContent.match(globalFindRegex).map(h=>{
+    const headings = htmlContent.match(globalFindRegex)?.map(h=>{
         const contentMatch = h.match(localFindRegex)
         return contentMatch[1]
     })
@@ -80,40 +75,47 @@ const page =async ({params}) => {
         `
     })
   return (
-        <main className='mt-5'>
+    <>
+        <main className='mt-5 relative'>
             <article className='mb-10'>
                 <div>
                     {/* heading */}
-                    <div className="mb-10">
+                    <div className="mb-10 flex flex-col">
                         <h1
                         className='text-4xl font-semibold text-zinc-900 text-left mb-2'
                         >{logData.title}</h1>
-                        <span>{String(logData.updatedAt)}</span>
-                    </div>
-                    <hr className=" block mb-10"/>
-                    <div>
-                        {/* <span>{String(logData.updatedAt)}</span> */}
-                        <div>
-                            {/* {logData.tags.map((tag, _)=>(
-                                <span key={_}>
-                                    {tag}
-                                </span>
-                            ))} */}
+                        <span className='mb-2 block'>Updated at : {(new Date(logData.updatedAt)).toDateString()}</span>
+                        <div className='flex items-center gap-2 justify-end'>
+                            {
+                                logData.tags && logData.tags.map((tag, _)=>(
+                                    <span
+                                        className="text-sm text-white mr-2 rounded-md bg-neutral-800 py-1 px-2"
+                                        key={_}
+                                    >{tag}</span>
+                                ))
+                            }
                         </div>
                     </div>
+                    <hr className=" block mb-10"/>
                 </div>
                 <HTMLStyler html={htmlContent}/>
             </article>
-            <div className="sticky top-0">
-                <ul>
-                    {headings.map((heading, _)=>(
-                        <li key={_}>
-                            <a href={`#${heading.trim().toLowerCase().replaceAll(/ /g, "-")}`}>{heading}</a>
-                        </li>
-                    ))}
-                </ul>
-            </div>
         </main>
+        <div className="fixed top-20 left-10">
+            <h3
+                className='text-xl font-semibold text-zinc-900 text-left mb-4'
+            >Table of Contents</h3>
+            <ol className="pl-2 flex flex-col gap-4 list-decimal">
+                {headings && headings.map((heading, _)=>(
+                    <li key={_}
+                        className="hover:pl-2 duration-200 transition-all"
+                    >
+                        <ScrollLinkForHeadings heading={heading}/>
+                    </li>
+                ))}
+            </ol>
+        </div>
+    </>
   )
 }
 

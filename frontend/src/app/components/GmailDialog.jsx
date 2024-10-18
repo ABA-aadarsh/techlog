@@ -18,7 +18,9 @@ const GmailDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
+        <button className='p-2 rounded-sm border px-3'>
           <Mail size={20} />
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -30,7 +32,6 @@ const GmailDialog = () => {
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
             <Input
-              id="link"
               defaultValue="aadarshbandhuaryal@gmail.com"
               readOnly
             />

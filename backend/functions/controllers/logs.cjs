@@ -4,7 +4,7 @@ const {isObjectRequirementFullfilled } = require("../libs.cjs")
 const mongoose = require("mongoose")
 const getLogsList = async (req = request, res = response) => {
     try {
-        const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 0}
+        const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 0, tags: 1}
         const filterQuery = {public:true}
         const logsTitlesArray = await Log.find(filterQuery).sort({ updatedAt: -1 }).select(selectionObject)
         return res.status(200).json(
@@ -33,7 +33,7 @@ const getLogsListForAdmin = async (req = request, res = response) => {
         const selectionObject = {title:1, updatedAt: 1, slug: 1, _id: 1}
         const logsTitlesArray = await Log.find({}).skip((page - 1) * limit).sort({ updatedAt: -1 }).limit(limit).select(selectionObject)
         if (logsTitlesArray.length == 0) {
-            return res.status(404).json(
+            return res.status(204).json(
                 {
                     message: "No logs found"
                 }
@@ -116,7 +116,8 @@ const addLog = async (req = request, res = response) => {
                 content: bodyObj.content,
                 tags: bodyObj.tags,
                 public: false,
-                slug: bodyObj.title.toLowerCase().split(" ").join("-")
+                slug: bodyObj.title.toLowerCase().split(" ").join("-"),
+                updatedAt: Date()
             }
         ) //default new logs are private
         const savedLog = await newLog.save()
@@ -188,9 +189,6 @@ const deleteLog = async (req, res) => {
         })
     }
 }
-const updateTitle = async (req, res) => {
-
-}
 const updateTitleAndContent = async (req, res) => {
     try {
         const params = req.params
@@ -213,7 +211,8 @@ const updateTitleAndContent = async (req, res) => {
             {
                 title: body.title,
                 content: body.content,
-                tags: body.tags
+                tags: body.tags,
+                updatedAt: Date()
             },
             {
                 runValidators: true,
@@ -246,4 +245,4 @@ const updateTitleAndContent = async (req, res) => {
         })
     }
 }
-module.exports = { getLogsList, getLog, addLog, changePublicStatus, deleteLog, updateTitle, updateTitleAndContent, getLogDataForAdmin, getLogsListForAdmin }
+module.exports = { getLogsList, getLog, addLog, changePublicStatus, deleteLog, updateTitleAndContent, getLogDataForAdmin, getLogsListForAdmin }

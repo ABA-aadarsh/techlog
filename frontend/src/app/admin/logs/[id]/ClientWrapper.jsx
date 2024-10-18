@@ -6,12 +6,11 @@ import Editor from './_components/Editor';
 import Preview from './_components/Preview';
 import { backendRoute } from '@/app/util';
 import apiClient from '../../adminApiClient';
-import { buttonVariants } from '@/components/ui/button';
-import { XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SettingPanel from './_components/SettingPanel';
+import { buttonVariants } from '@/components/ui/button';
 
-const ClientWrapper = ({params, pathRevalidator}) => {
+const ClientWrapper = ({logId, pathRevalidator}) => {
     const [loading,setLoading] = useState(true)
     const [error,setError]=useState(false)
     const router = useRouter()
@@ -73,9 +72,10 @@ const ClientWrapper = ({params, pathRevalidator}) => {
         //     _tags: ["Tag1", "Tag2"]
         // })
         // setLoading(false)
-        fetchData(params.id)
-    },[params.id])
+        fetchData(logId)
+    },[logId])
     if(error){
+        console.log(error)
         return (
             <div>
                 <p>Error in the Console</p>
@@ -104,10 +104,10 @@ const ClientWrapper = ({params, pathRevalidator}) => {
                     <button
                     className={buttonVariants({variant: "link"})}
                     onClick={async()=>{
-                        await saveLog(params.id)
+                        await saveLog(logId)
                     }}>Save Log</button>
                 </div>
-                <SettingPanel id={params.id} publicStatus={isPublic}
+                <SettingPanel id={logId} publicStatus={isPublic}
                     pathRevalidator={pathRevalidator}
                     slug={oldSlug}
                 />
@@ -115,14 +115,12 @@ const ClientWrapper = ({params, pathRevalidator}) => {
             <main className='flex-grow grid grid-rows-[100px_auto] grid-cols-2 grid-flow-col h-full overflow-hidden'>
                 <section className='col-span-2'>
                     <div className="flex items-center justify-center">
-                        {/* title */}
                         <input type="text" value={title} onChange={(e)=>updateTitle(e.target.value)}
                             placeholder="Title"
                             className='max-w-[500px] w-4/5 p-1 text-sm rounded-sm text-black bg-white border-2 border-zinc-400'
                         />
                     </div>
                     <div className="px-2 flex items-center justify-between">
-                        {/* tags */}
                         <div className="text-sm flex items-center gap-2">
                             <input type="text" value={newTagValue} onChange={(e)=>setNewTagValue(e.target.value)} 
                                 className='p-1 w-[100px] text-sm rounded-sm text-black bg-white border-2 border-zinc-400'

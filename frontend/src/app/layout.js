@@ -35,12 +35,14 @@ export default function RootLayout({ children }) {
           <SessionProvider>
             {showNavbar ?
               (
-              <div className='max-w-[800px] px-2 w-4/5 mx-auto'>
-                {/* <Navbar /> */}
                 <>
-                  {children}
+                <div className='max-w-[800px] px-2 w-4/5 mx-auto'>
+                  <Navbar />
+                  <div>
+                    {children}
+                  </div>  
+                </div>
                 </>
-              </div>
               ): (
                 <>
                   {children}

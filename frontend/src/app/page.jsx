@@ -1,11 +1,10 @@
 import React from 'react'
-import Navbar from './components/Navbar'
 import { backendRoute } from './util'
 import { notFound } from 'next/navigation'
 import { GithubLogo } from './_svgs/GithubLogo'
 import GmailDialog from './components/GmailDialog'
 import { buttonVariants } from '@/components/ui/button'
-import { Linkedin } from 'lucide-react'
+import { Linkedin, Notebook } from 'lucide-react'
 import Link from 'next/link'
 const fetchlogsList = async ()=>{
   try {
@@ -64,9 +63,7 @@ async function page() {
                     <GithubLogo size={20}/>
                   </Link>
                 </li>
-                <li className={buttonVariants({variant:'outline'})+ " cursor-pointer"}>
-                  <GmailDialog/>
-                </li>
+                <GmailDialog/>
                 <li className={buttonVariants({variant:'outline'})+ " cursor-pointer"}>
                   <Link href="https://www.linkedin.com/in/aadarshbandhuaryal/">
                     <Linkedin size={20}/>
@@ -78,27 +75,36 @@ async function page() {
         </div>
 
 
-        <div>
-          <ul>
+        <div className="mb-10">
+          <h1 className='text-2xl font-bold mb-5'>Logs</h1>
+          <hr className='mb-5 block'/>
+          <div className='flex flex-col gap-7'>
             {
               blogsList.map((i,_)=>(
-                <li key={_} className='mb-2'>
-                  <Link href={`/logs/${i.slug}`}>
-                    <h2 className='text-lg font-semibold'>{i.title}</h2>
-                  </Link>
-                  <p className='text-sm text-gray-500'>{i.updatedAt}</p>
-                  <ul className='flex flex-wrap'>
+                <div key={_} >
+                  <div className='flex flex-col gap-1 mb-3'>
+                    <p className='text-sm text-gray-500'>{(new Date(i.updatedAt)).toDateString()}</p>
+                    <Link href={`/logs/${i.slug}`}
+                      className='flex items-center gap-2'
+                      prefetch={false}
+                    >
+                      <Notebook size={20}/>
+                      <h2 className='text-2xl font-medium'>{i.title}</h2>
+                    </Link>
+                  </div>
+                  <div className='pl-7'>
                     {
-                      (Array.isArray(i.tags) && i.tags.length>0) &&
-                      i.tags.map((j,_)=>(
-                        <li key={_} className='mr-2 mb-2 px-2 py-1 border rounded'>{j}</li>
+                      i.tags && i.tags.map((tag,_)=>(
+                        <span key={_} className="text-sm text-white mr-2 rounded-md bg-neutral-800 py-1 px-2">
+                          {tag}
+                        </span>
                       ))
                     }
-                  </ul>
-                </li>
+                  </div>
+                </div>
               ))
             }
-          </ul>
+          </div>
         </div>
       </main>
   )

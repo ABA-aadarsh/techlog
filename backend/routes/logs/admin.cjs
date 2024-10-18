@@ -8,7 +8,6 @@ router
 .delete("/:id",LogsController.deleteLog)
 .patch("/:id/public-staus-change", LogsController.changePublicStatus)
 .patch("/:id", LogsController.updateTitleAndContent)
-.patch("/:id/title", LogsController.updateTitle)
 .post("/", LogsController.addLog)
 
 module.exports = router

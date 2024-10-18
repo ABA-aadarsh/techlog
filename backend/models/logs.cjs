@@ -7,7 +7,8 @@ const schema = new mongoose.Schema(
             default: ""
         },
         updatedAt: {
-            type: Types.Date
+            type: Types.Date,
+            required: true
         },
         tags: {
             type: [Types.String],
@@ -29,14 +30,6 @@ const schema = new mongoose.Schema(
         }
     }
 )
-schema.pre("save", (next)=>{
-    const doc = this
-    if(this.isNew){
-        doc.slug = String(doc.title).toLowerCase().trim().replace(/ /g,'-')
-    }
-    doc.updated = new Date()
-    next()
-})
 const model = mongoose.model("logs", schema)
 
 module.exports = model

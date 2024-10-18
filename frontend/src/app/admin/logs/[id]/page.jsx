@@ -4,6 +4,7 @@ import React from 'react'
 import ClientWrapper from './ClientWrapper'
 
 const page = ({params}) => {
+    console.log(params)
     const pathRevalidator = async (slug) => {
         "use server"
         revalidatePath(`/logs/${slug}`)
@@ -12,9 +13,10 @@ const page = ({params}) => {
     }
   return (
     <div>
-        <ClientWrapper pathRevalidator={pathRevalidator}
-            params={params}
-        />
+      <ClientWrapper 
+        logId={params.id}
+        pathRevalidator={pathRevalidator}
+      />
     </div>
   )
 }
