@@ -5,6 +5,7 @@ import ThemesProvider from "@/app/components/ThemesProvider"
 import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,7 +20,7 @@ const geistMono = localFont({
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  const showNavbar = pathname === '/' || /^\/logs\/[\w-]+$/.test(pathname)
+  const showNavbar = pathname === '/' || pathname === '/projects' || pathname.startsWith("/logs/") || pathname.startsWith("/projects/")
 
   return (
     <html lang="en" suppressHydrationWarning={true}>
@@ -38,9 +39,10 @@ export default function RootLayout({ children }) {
                 <>
                 <div className='max-w-[800px] px-2 w-4/5 mx-auto'>
                   <Navbar />
-                  <div>
+                  <div className="min-h-dvh">
                     {children}
-                  </div>  
+                  </div>
+                  <Footer/>
                 </div>
                 </>
               ): (

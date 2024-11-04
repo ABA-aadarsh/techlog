@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { backendRoute } from '@/app/util';
 import adminApiClient from '@/app/admin/adminApiClient';
 
-const page = () => {
+const LogsPage = () => {
     const limit = 10; // no of titles per one request
     const [noMoreLogs, setNoMoreLogs] = useState(false)
     const [listLoading, setListLoading] = useState(false)
@@ -131,4 +131,4 @@ const page = () => {
     )
 }
 
-export default page
+export default LogsPage

@@ -85,7 +85,7 @@ async function page() {
                   <div className='flex flex-col gap-1 mb-3'>
                     <p className='text-sm text-gray-500'>{(new Date(i.updatedAt)).toDateString()}</p>
                     <Link href={`/logs/${i.slug}`}
-                      className='flex items-center gap-2'
+                      className='flex items-center gap-2 hover:text-blue-700 transition-colors duration-200'
                       prefetch={false}
                     >
                       <Notebook size={20}/>
@@ -104,6 +104,7 @@ async function page() {
                 </div>
               ))
             }
+            <span className='block w-full text-center italic'>End of Logs</span>
           </div>
         </div>
       </main>

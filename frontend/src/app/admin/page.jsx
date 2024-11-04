@@ -1,5 +1,6 @@
 "use client"
 import { getCsrfToken } from 'next-auth/react';
+import Link from 'next/link';
 import React from 'react'
 
 function page() {
@@ -27,7 +28,15 @@ function page() {
         >/logout</button>
       </div>
 
-      <div>
+      <div className='px-10'>
+        <ul>
+          <li>
+            <Link href={"/admin/logs"}>Logs</Link>
+          </li>
+          <li>
+            <Link href={"/admin/projects"}>Projects</Link>
+          </li>
+        </ul>
       </div>
     </div>
   )

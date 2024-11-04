@@ -22,9 +22,6 @@ const Navbar = ({}) => {
                     <li>
                         <Link href={"/projects"}>Projects</Link>             
                     </li>
-                    <li>
-                        <Link  href={"/logs"}>Logs</Link>
-                    </li>
                 </ul>
             </nav>
             {/* user account */}
